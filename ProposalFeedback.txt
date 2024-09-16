@@ -1,0 +1,33 @@
+CMSI 4071 Fall 2024
+Project Proposal Feedback
+Project: educational social application [no name as yet]
+=========================
+Proposal Document [2 points]:
+Since the stated goal of your project is to demonstrate your knowledge of
+full stack mobile application development, producing a "complete"
+application, you should give a bit more detail about what that term means.
+Also, you call this an 'educational social app' in your slides, but you
+don't mention that goal in the proposal document.  However, your description
+of all the technical details is VERY complete.  Your justification section
+addresses the learning experience you will go through, which is good.
+
+A couple of things to address:
+   These documentation assignments are supposed to be like industry-style
+   documents.  As such, you should not state the 'prompt' from the web page
+   in the document.
+   The phrase "analytics analysis" seems redundant.
+
+
+Proposal Presentation [3 points]:
+The proposal was kinda short, but the lack of slides you made up for by
+talking about the project.  Questions were answered well, and clarified the
+way the project will be used.
+
+
+Summary:
+--------
+Total:  5% out of 5% for this deliverable.
+
+Adequate job overall, and I have confidence in you as a team.
+
+Keep up the good work!
