@@ -4,7 +4,7 @@ export default function App() {
   return (
     <>
       <h1>Async</h1>
-      <body> Text goes here </body>
+      <h2 className="text-2xl font-semibold">tailwind styling test</h2>
     </>
   );
 }
