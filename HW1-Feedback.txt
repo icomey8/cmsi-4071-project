@@ -1,0 +1,36 @@
+
+Essay Feedback
+Homework Assignment #1
+CMSI 4071 Fall 2024
+======================
+
+SUMMARY:
+   An excellent summary, and I like that you interspersed it with personal
+   thoughts that went along with the reading.  Good work on this section,
+   logically laid out and well-stated.
+
+CRITICAL THINKING:
+   Relation to S/W engineering:
+      Good ideas here.  I like the first one, 'nailing down the details.'
+      It's so important to make sure you are giving the customer what THEY
+      define as 'value', and this is not always an easy task.
+
+      It *IS* surprising to read about the issues direct from the user, huh?
+
+   Thoughts/opinions presented:
+      Good integration of your opinions with the rest of your points in the
+      essay.  Nice work!
+
+OVERALL ASSESSMENT:
+   Category                          Points
+   Summary of article                  25
+   Relation to S/W engineering         25
+   Thoughts/opinions presented         25
+   Spelling/Grammar                    25
+                                     -----
+   Subtotal                           100
+   ------------------------------------------------------
+   Total Percentage:   100 out of 100 which is an A-plus
+
+Keep up the good work ~ you're rollin'....
+

@@ -1,0 +1,60 @@
+
+Documentation Feedback ~ Deliverable #2
+Software Requirements Specification
+Initial Development Schedule
+CMSI 4071 Fall 2024
+=======================================
+
+COMPONENT BREAKDOWN:
+   Very thorough job on this section.  Nice!
+
+FUNCTIONAL REQUIREMENTS:
+   For an application of this size, eight requirements is not nearly enough
+   to specify what you need to build.  Further, you did such a good job on
+   the component identification, you should use that breakdown and specify
+   at least 8 - 10 requirements FOR EACH COMPONENT.
+
+PERFORMANCE REQUIREMENTS:
+   These are good performance-related items, but they need to be expressed
+   in requirements language.  Beware of 'weasel words' like "smoothly" and
+   "responsive" and "easily".  What is easy for you might not be for me.
+   Put these into 'shall' statements and use associated 'will' statements to
+   provide further detail.  For example, you have:
+
+      5.4.3 Class Homepage Design Must Be Intuitive
+            * Users must be able to navigate their class pages easily and
+              intuitively
+
+   This should be:
+
+      5.4.3 Class Homepage
+      5.4.3.1 The Class Homepage shall allow users to navigate their class
+              pages with no more than two mouse clicks.
+      5.4.3.2 The Class Homepage shall allow users to navigate their class
+              pages in a manner that is standardized across the application.
+              The standardized access will conform to the way all modern web
+              pages operate.
+
+   Try to remove any ambiguity in your language.
+
+ENVIRONMENT REQUIREMENTS:
+   Are you limiting your operation to Intel processors?  What about AMD?
+   What about ARM?  What about Apple silicon M1/M2/M3?
+
+
+OVERALL ASSESSMENT:
+   Category                          Points
+   Component Breakdown                 1/1
+   Functional Requirements             2/4
+   Performance Requirements            1/2
+   Environment Requirements            1/1
+                                     =====
+   Subtotal                            5/8
+   Preliminary Schedule                2/2
+   ------------------------------------------------------
+   Total Percentage:   7/10 = 70% which is a C
+
+Make the adjustments stated above by the end of the semester for full credit
+on this document.
+
+Nice work!
