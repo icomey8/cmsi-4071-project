@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
 
+
+//NOTE:
+/*
+  THIS CODE IS FOR A CLASS DISCUSSION BOARD
+  WHAT YOU ARE SEEING SHOULD BE A SUB PAGE OF THE MAIN PAGE,
+  THAT STILL NEEDS TO BE IMPLEMETED.
+  THEREFORE, THIS CODE NEEDS TO BE MOVED TO A SEPARATE FILE
+*/
 export default function App() {
   const [selectedDiscussion, setSelectedDiscussion] = useState(null);
   const [newDiscussion, setNewDiscussion] = useState("");
@@ -57,11 +65,12 @@ export default function App() {
       {/*margin left 64px flex-1*/}
       <div className="ml-64 flex-1">
         {/*margin 4px, padding 4px, text 4 extra large, font bold*/}
-        <h1 className="m-4 text-4xl font-bold">Welcome to Async</h1>
+        <h1 className="m-4 text-4xl font-bold">Welcome to *CLASSNAME*</h1>
         {/*background gray-800, text-white, padding 2px*/}
-        <nav className="bg-gray-800 text-white py-2">
+        <nav className="bg-gray-800 text-white py-2"> 
           {/*margin left 4px*/}
           <ul className="flex space-x-4 ml-4">
+            <li><a href="#" class= "hover:underline">Your Classes</a> </li>
           </ul>
         </nav>
         {/*margin 4px, padding 4px, border, border-gray-300, rounded*/}
