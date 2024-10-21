@@ -1,0 +1,38 @@
+
+Documentation Feedback ~ Deliverable #3
+Software Development Plan
+CMSI 4071 Fall 2024
+=======================================
+
+WHEW!  I almost missed this because the file is named "Preliminary Schedule"
+not "Software Development Plan"...  :D
+
+INTRODUCTION/DELIVERABLES SECTION:
+   This section should show not only the class deliverables, but also the
+   project deliverable tasks.  They should all be intermingled so that the
+   dates are consecutive.
+
+PROJECT RESOURCES SECTION:
+   Excellent job here, nothing to add.
+
+PROJECT ORGANIZATION SECTION:
+   Excellent job here, nothing to add.
+
+PROJECT SCHEDULE SECTION:
+   Excellent job here, nothing to add.
+
+OVERALL ASSESSMENT:
+   Category                          Points
+   Project Deliverables               0.5
+   Project Resources                  1.0
+   Project Organization               1.0
+   Project Schedule                   2.0
+                                     =====
+   Subtotal                           4.5
+   ------------------------------------------------------
+   Total Percentage:   4.5/5.0 = 90% which is an A-minus
+
+Add the task deliverables into the first section by the end of the semester
+for full credit on this document.
+
+Nice work!
