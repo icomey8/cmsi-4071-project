@@ -7,6 +7,7 @@ const initialDiscussions = [
 		content: "Content for Discussion 1...",
 		author: "User",
 		createdAt: "2024-10-14T12:00:00Z",
+		comments: []
 	},
 	{
 		id: 2,
@@ -14,6 +15,7 @@ const initialDiscussions = [
 		content: "Content for Discussion 2...",
 		author: "User",
 		createdAt: "2024-10-14T12:00:00Z",
+		comments: []
 	},
 	{
 		id: 3,
@@ -21,6 +23,7 @@ const initialDiscussions = [
 		content: "Content for Discussion ...",
 		author: "User",
 		createdAt: "2024-10-14T12:00:00Z",
+		comments: []
 	},
 ];
 
@@ -31,6 +34,7 @@ export default function Discussions() {
 	const [discussions, setDiscussions] = useState(initialDiscussions);
 	const [newDiscussionTitle, setNewDiscussionTitle] = useState("");
 	const [showForm, setShowForm] = useState(false);
+	const [newComment, setNewComment] = useState("");
 	
 	const handleDiscussionClick = (discussion) => {
 		setSelectedDiscussion(discussion);
@@ -48,11 +52,38 @@ export default function Discussions() {
 			content: newDiscussionContent,
 			author: "New User",
 			createdAt: new Date().toISOString(),
+			comments: []
 		}
 		setDiscussions([...discussions, newDiscussion]);
 		setNewDiscussionTitle("");
 		setNewDiscussionContent("");
 		setShowForm(false);
+	}
+
+	const handleAddComment = () => {
+		if (newComment.trim() && selectedDiscussion){
+			const updatedDiscussions = discussions.map((discussion) => {
+				if (discussion.id === selectedDiscussion.id) {
+					return {
+						...discussion,
+						comments: [
+							...discussion.comments,
+							{ author: "Commenter", content: newComment, createdAt: new Date().toISOString() }
+						]
+					};
+				}
+				return discussion;
+			});
+			setDiscussions(updatedDiscussions);
+			setSelectedDiscussion({
+				...selectedDiscussion,
+				comments: [
+					...selectedDiscussion.comments,
+					{ author: "Commenter", content: newComment, createdAt: new Date().toISOString() }
+				]
+			});
+			setNewComment("");
+		}
 	}
 	return (
 		<>
@@ -66,7 +97,7 @@ export default function Discussions() {
 							<li key={discussion.id}>
 								{/*block padding 2px 4px, when hovering make color gray-700*/}
 								<button
-									className="block w-full px-4 py-2 text-left hover:bg-gray-700"
+									className="block w-full px-4 py-2 text-left hover:bg-gray-700 truncate whitespace-nowrap"
 									onClick={() => handleDiscussionClick(discussion)}
 								>
 									{discussion.title}
@@ -98,6 +129,7 @@ export default function Discussions() {
 							</li>
 						</ul>
 					</nav>
+
 					{/*margin 4px, padding 4px, border, border-gray-300, rounded*/}
 					<div className="p-4 m-4 border border-gray-300 rounded">
 						{selectedDiscussion ? (
@@ -112,6 +144,38 @@ export default function Discussions() {
 									By {selectedDiscussion.author} on{" "}
 									{new Date(selectedDiscussion.createdAt).toLocaleDateString()}
 								</p>
+								{/* Comments Section */}
+								<div className="mt-4">
+									<h3 className="text-xl font-semibold">Comments</h3>
+									<ul className="mt-2">
+										{selectedDiscussion.comments.map((comment, index) => (
+											<li key={index} className="border-b border-gray-300 py-2">
+												<p className="text-sm text-gray-700">
+													<strong>{comment.author}</strong>: {comment.content}
+												</p>
+												<p className="text-xs text-gray-500">
+													{new Date(comment.createdAt).toLocaleDateString()}
+												</p>
+											</li>
+										))}
+									</ul>
+
+									{/* Add Comment Form */}
+									<div className="mt-4">
+										<textarea
+											placeholder="Add a comment..."
+											className="w-full p-2 mb-2 border border-gray-300 rounded"
+											value={newComment}
+											onChange={(e) => setNewComment(e.target.value)}
+										></textarea>
+										<button
+											onClick={handleAddComment}
+											className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-500"
+										>
+											Add Comment
+										</button>
+									</div>
+								</div>
 							</div>
 						) : (
 							<p>Select a discussion to see the content.</p>
