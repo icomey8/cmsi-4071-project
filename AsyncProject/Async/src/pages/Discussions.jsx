@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const discussions = [
+const initialDiscussions = [
 	{
 		id: 1,
 		title: "Discussion 1",
@@ -28,11 +28,32 @@ export default function Discussions() {
 	const [selectedDiscussion, setSelectedDiscussion] = useState(null);
 	const [newDiscussion, setNewDiscussion] = useState("");
 	const [newDiscussionContent, setNewDiscussionContent] = useState("");
-
+	const [discussions, setDiscussions] = useState(initialDiscussions);
+	const [newDiscussionTitle, setNewDiscussionTitle] = useState("");
+	const [showForm, setShowForm] = useState(false);
+	
 	const handleDiscussionClick = (discussion) => {
 		setSelectedDiscussion(discussion);
-	};
+	}
 
+	const handleAddDiscussion = () => {
+		setShowForm(true);
+	}
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		const newDiscussion = {
+			id: discussions.length +1,
+			title: newDiscussionTitle,
+			content: newDiscussionContent,
+			author: "New User",
+			createdAt: new Date().toISOString(),
+		}
+		setDiscussions([...discussions, newDiscussion]);
+		setNewDiscussionTitle("");
+		setNewDiscussionContent("");
+		setShowForm(false);
+	}
 	return (
 		<>
 			<div className="flex p-0 m-0">
@@ -53,6 +74,13 @@ export default function Discussions() {
 							</li>
 						))}
 					</ul>
+					{/* Button to open the new discussion form */}
+					<button
+						className="w-full px-4 py-2 mt-4 text-white bg-blue-600 rounded hover:bg-blue-500"
+						onClick={handleAddDiscussion}
+					>
+						Add New Discussion
+					</button>
 				</aside>
 
 				{/*margin left 64px flex-1*/}
@@ -89,6 +117,36 @@ export default function Discussions() {
 							<p>Select a discussion to see the content.</p>
 						)}
 					</div>
+
+					{/* Form to add new discussion */}
+					{showForm && (
+						<div className="p-4 m-4 border border-gray-300 rounded">
+							<h2 className="mb-4 text-xl font-bold">Add New Discussion</h2>
+							<form onSubmit={handleSubmit}>
+								<input
+									type="text"
+									placeholder="Discussion Title"
+									className="w-full p-2 mb-2 border border-gray-300 rounded"
+									value={newDiscussionTitle}
+									onChange={(e) => setNewDiscussionTitle(e.target.value)}
+									required
+								/>
+								<textarea
+									placeholder="Discussion Content"
+									className="w-full p-2 mb-2 border border-gray-300 rounded"
+									value={newDiscussionContent}
+									onChange={(e) => setNewDiscussionContent(e.target.value)}
+									required
+								></textarea>
+								<button
+									type="submit"
+									className="px-4 py-2 text-white bg-green-600 rounded hover:bg-green-500"
+								>
+									Submit
+								</button>
+							</form>
+						</div>
+					)}
 				</div>
 			</div>
 		</>

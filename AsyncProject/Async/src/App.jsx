@@ -1,5 +1,7 @@
 import Login from './pages/Login';
-
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Discussions from './pages/Discussions';
 
 //NOTE:
 /*
@@ -9,12 +11,19 @@ import Login from './pages/Login';
   THEREFORE, THIS CODE NEEDS TO BE MOVED TO A SEPARATE FILE
 */
 
-
 export default function App() {
-
   return (
-    <>
-      <Login />
-    </>
+    <Router>
+      <Routes>
+        {/* Route for Login page */}
+        <Route path="/login" element={<Login />} />
+
+        {/* Route for Discussions page */}
+        <Route path="/discussions" element={<Discussions />} />
+
+        {/* Default Route redirects to Login */}
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
+    </Router>
   );
 }
