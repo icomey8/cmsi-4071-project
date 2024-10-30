@@ -35,6 +35,7 @@ export default function Discussions() {
 	const [newDiscussionTitle, setNewDiscussionTitle] = useState("");
 	const [showForm, setShowForm] = useState(false);
 	const [newComment, setNewComment] = useState("");
+	const currentUser = "Commenter"; // Just representing current user for now, change to user later
 	
 	const handleDiscussionClick = (discussion) => {
 		setSelectedDiscussion(discussion);
@@ -85,6 +86,26 @@ export default function Discussions() {
 			setNewComment("");
 		}
 	}
+	const handleDeleteComment = (commentIndex) => {
+		if (selectedDiscussion) {
+			const updatedDiscussions = discussions.map((discussion) => {
+				if (discussion.id === selectedDiscussion.id) {
+					const updatedComments = discussion.comments.filter((_, index) => index !== commentIndex);
+					return {
+						...discussion,
+						comments: updatedComments
+					};
+				}
+				return discussion;
+			});
+			setDiscussions(updatedDiscussions);
+			setSelectedDiscussion({
+				...selectedDiscussion,
+				comments: selectedDiscussion.comments.filter((_, index) => index !== commentIndex)
+			});
+		}
+	}
+
 	return (
 		<>
 			<div className="flex p-0 m-0">
@@ -150,12 +171,22 @@ export default function Discussions() {
 									<ul className="mt-2">
 										{selectedDiscussion.comments.map((comment, index) => (
 											<li key={index} className="border-b border-gray-300 py-2">
-												<p className="text-sm text-gray-700">
-													<strong>{comment.author}</strong>: {comment.content}
-												</p>
-												<p className="text-xs text-gray-500">
-													{new Date(comment.createdAt).toLocaleDateString()}
-												</p>
+												<div>
+													<p className="text-sm text-gray-700">
+														<strong>{comment.author}</strong>: {comment.content}
+													</p>
+													<p className="text-xs text-gray-500">
+														{new Date(comment.createdAt).toLocaleDateString()}
+													</p>
+												</div>
+												{comment.author === currentUser && (
+													<button
+														onClick={() => handleDeleteComment(index)}
+														className="px-2 py-1 text-white bg-red-600 rounded hover:bg-red-500"
+													>
+														Delete
+													</button>
+												)}
 											</li>
 										))}
 									</ul>
@@ -186,6 +217,12 @@ export default function Discussions() {
 					{showForm && (
 						<div className="p-4 m-4 border border-gray-300 rounded">
 							<h2 className="mb-4 text-xl font-bold">Add New Discussion</h2>
+							<button
+								onClick={() => setShowForm(false)} // Close button to hide form
+								className="mb-2 px-2 py-1 text-white bg-red-600 rounded hover:bg-red-500"
+							>
+								Exit
+							</button>
 							<form onSubmit={handleSubmit}>
 								<input
 									type="text"
