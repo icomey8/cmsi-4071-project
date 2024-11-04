@@ -1,0 +1,37 @@
+
+Documentation Feedback ~ Deliverable #4
+Software Design Document ~ Architecture
+CMSI 4071 Fall 2024
+=======================================
+
+SDD: ARCHITECTURAL DESIGN SECTION:
+   Major software components section
+   Major software interactions section
+   Architectural design diagrams section
+
+OVERALL ASSESSMENT:
+   Category                          Points
+   --------------------------------  ---------
+   ARCHITECTURAL DESIGN SECTION:
+   Major software components            2 of 2
+   Major software interactions          2 of 2
+   Architectural design diagrams        6 of 6
+                                     ======
+   Subtotal                            10
+   ------------------------------------------------------
+   Total Percentage:  10/10 = 100% which is an A-plus
+
+============================================================================
+COMMENTS
+Excellent job on this preliminary document!  A couple of comments:
+
+It looks from the diagrams like the User can maintain Discussion Lists and
+not be logged in to the system.  Is this the case?
+
+It also looks like inthe Entity Database Interactions diagram there is no
+attribute for the text that goes in a discussion or a comment, although that
+is really the kind of thing that would be in the detailed design section.
+Still, it's a bit inconsistent.
+
+Still, I think this is good enough as-is for the Architectural level, so you
+don't need to do anything else with this section.  Full credit here.
