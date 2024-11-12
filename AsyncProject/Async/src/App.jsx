@@ -1,12 +1,7 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Intro from './pages/Intro';
 import Login from './pages/Login';
-import MainPage from './pages/MainPage';
-import './styles/fonts.css';
-import './styles/normalize.css';
-import './styles/webstyle.css';
-import './styles/async.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Discussions from './pages/Discussions';
 
 //NOTE:
 /*
@@ -20,10 +15,14 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Intro />} />
+        {/* Route for Login page */}
+        {/*<Route path="/login" element={<Login />} />*/}
+
+        {/* Route for Discussions page */}
         <Route path="/discussions" element={<Discussions />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/main" element={<MainPage />} />
+
+        {/* Default Route redirects to Login */}
+        <Route path="*" element={<Navigate to="/discussions" />} />
       </Routes>
     </Router>
   );
