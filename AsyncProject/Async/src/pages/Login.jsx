@@ -44,7 +44,7 @@ export default function Login() {
 						</button>
 					</form>
 				</Card>
- 			</div>
- 		</>
+			</div>
+		</>
 	);
- }
+}
