@@ -3,6 +3,7 @@ import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import Link from '@tiptap/extension-link';
+import './styles.scss';
 
 const TipTapEditor = () => {
   const editor = useEditor({
@@ -61,7 +62,19 @@ const TipTapEditor = () => {
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           className={`p-2 border ${editor.isActive('orderedList') ? 'bg-gray-300' : ''}`}
         >
+          Ordered List
+        </button>
+        <button
+          onClick={addLink} 
+          className="p-2 border"
+        >
           Add Link
+        </button>
+        <button
+          onClick={removeLink} 
+          className="p-2 border"
+        >
+          Remove Link
         </button>
 
       </div>
