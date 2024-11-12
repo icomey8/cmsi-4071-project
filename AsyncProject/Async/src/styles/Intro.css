@@ -1,0 +1,22 @@
+.intro-background {
+    min-height: 100vh;
+    background-color: #0f172a;
+    background-image: url('/gradient.svg');
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: cover;
+    color: white;
+  }
+  
+  .intro-section {
+    padding: 4rem 0;
+  }
+  
+  .intro-card {
+    background-color: #171918;
+    width: 280px;
+    height: 280px;
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+  }
