@@ -3,6 +3,14 @@
     :first-child {
       margin-top: 0;
     }
+
+    max-height: 200px; /* Can change later */
+    overflow-y: auto;
+    word-wrap: break-word;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+
   
     /* List styles */
     ul {
