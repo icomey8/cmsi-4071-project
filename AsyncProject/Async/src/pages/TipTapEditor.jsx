@@ -4,8 +4,10 @@ import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import CharacterCount from "@tiptap/extension-character-count";
 import Link from "@tiptap/extension-link";
-import { FaBold, FaItalic, FaUnderline } from "react-icons/fa";
 import {
+  MdFormatBold,
+  MdFormatItalic,
+  MdFormatUnderlined,
 	MdFormatListBulleted,
 	MdFormatListNumbered,
 	MdAddLink,
@@ -62,7 +64,7 @@ const TipTapEditor = () => {
 						editor.isActive("bold") ? "bg-gray-300" : ""
 					}`}
 				>
-					<FaBold />
+					<MdFormatBold />
 				</button>
 				<button
 					onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -70,7 +72,7 @@ const TipTapEditor = () => {
 						editor.isActive("italic") ? "bg-gray-300" : ""
 					}`}
 				>
-					<FaItalic />
+					<MdFormatItalic />
 				</button>
 				<button
 					onClick={() => editor.chain().focus().toggleUnderline().run()}
@@ -78,7 +80,7 @@ const TipTapEditor = () => {
 						editor.isActive("underline") ? "bg-gray-300" : ""
 					}`}
 				>
-					<FaUnderline />
+					<MdFormatUnderlined />
 				</button>
 				<button
 					onClick={() => editor.chain().focus().toggleBulletList().run()}
