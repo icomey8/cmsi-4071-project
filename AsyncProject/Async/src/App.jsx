@@ -38,3 +38,5 @@ export default function App() {
 //npm install date-fns
 //npm install react-icons
 //npm install react-router-dom
+
+// NEW -> npm install @tiptap/extension-character-count

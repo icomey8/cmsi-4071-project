@@ -104,4 +104,15 @@
     }
   }
 
+  @keyframes color-change {
+    0%, 100% {
+      fill: #bfdbfe; /* blue-500 */
+    }
+    50% {
+      fill: #3b82f6; /* blue-700 */
+    }
+  }
   
+  .animate-color-change {
+    animation: color-change 3s infinite;
+  }

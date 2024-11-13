@@ -2,8 +2,22 @@ import React, { useState } from 'react';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
+import CharacterCount from '@tiptap/extension-character-count'
 import Link from '@tiptap/extension-link';
 import './styles.scss';
+
+const BlueCircle = () => {
+  return (
+    <svg
+      className="w-6 h-6 text-blue-500 transition-colors duration-200 hover:text-blue-700 animate-color-change"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+    >
+      <circle cx="12" cy="12" r="5" />
+    </svg>
+  );
+};
 
 const TipTapEditor = () => {
   const editor = useEditor({
@@ -11,6 +25,7 @@ const TipTapEditor = () => {
       StarterKit,
       Underline,
       Link,
+      CharacterCount
     ],
     content: '<p>Hello, world!</p>',
   });
@@ -33,7 +48,7 @@ const TipTapEditor = () => {
   return (
     <div>
       {/* Toolbar Buttons */}
-      <div className="flex space-x-2 mb-4">
+      <div className="flex mb-4 space-x-2">
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
           className={`p-2 border ${editor.isActive('bold') ? 'bg-gray-300' : ''}`}
@@ -80,8 +95,9 @@ const TipTapEditor = () => {
       </div>
 
       {/* Editor Content */}
-      <div className="border p-4 rounded">
+      <div className="p-4 border rounded">
         <EditorContent editor={editor} />
+        <div className='flex items-center pt-4 text-xs text-gray-500'> <BlueCircle></BlueCircle> {editor.storage.characterCount.words()} words</div>
       </div>
     </div>
   );
