@@ -1,7 +1,16 @@
-import Login from './pages/Login';
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Intro from './pages/Intro';
+import Login from './pages/Login';
+import MainPage from './pages/MainPage';
 import Discussions from './pages/Discussions';
+import Signin from './pages/Signin';
+import ProfileMaker from './pages/ProfileMaker';
+import Profile from './pages/Profile';
+import './styles/fonts.css';
+import './styles/normalize.css';
+import './styles/webstyle.css';
+import './styles/async.css';
 
 //NOTE:
 /*
@@ -15,14 +24,13 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* Route for Login page */}
-        {/*<Route path="/login" element={<Login />} />*/}
-
-        {/* Route for Discussions page */}
+        <Route path="/" element={<Intro />} />
         <Route path="/discussions" element={<Discussions />} />
-
-        {/* Default Route redirects to Login */}
-        <Route path="*" element={<Navigate to="/discussions" />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/main" element={<MainPage />} />
+        <Route path="/signin" element={<Signin/>} />
+        <Route path="/profilemaker" element={<ProfileMaker />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>
   );
@@ -38,5 +46,3 @@ export default function App() {
 //npm install date-fns
 //npm install react-icons
 //npm install react-router-dom
-
-// NEW -> npm install @tiptap/extension-character-count
