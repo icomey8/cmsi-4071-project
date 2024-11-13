@@ -109,7 +109,7 @@ export default function Discussions() {
 					{showForm && (
 						<div className="p-4 m-4 border border-gray-300 rounded">
 							<div className="flex justify-between w-full">
-								<h2 className="mb-4 text-xl font-bold">Add New Discussion</h2>
+								<h2 className="mb-4 text-xl font-bold">Add New Post</h2>
 								<button
 									onClick={() => setShowForm(false)}
 									className="px-2 py-1 mb-2 text-white bg-red-600 rounded hover:bg-red-500"
