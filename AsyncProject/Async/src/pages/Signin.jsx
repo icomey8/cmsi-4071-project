@@ -2,19 +2,20 @@ import React, { useState } from "react";
 import { Card } from "@/components/card";
 import { useNavigate } from "react-router-dom";
 import Logo from "/assets/app-logo.svg";
-import { loginWithEmail } from "../firebase/auth"; // Adjust the path as needed
+import { signUpWithEmail } from "../firebase/auth"; // Adjust the path as needed
 
-export default function Login() {
+export default function Signin() {
 	const navigate = useNavigate();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
 
-	const handleLogin = async (e) => {
+	const handleSignup = async (e) => {
 		e.preventDefault();
 		try {
-			await loginWithEmail(email, password);
-			navigate("/main"); // Redirect to main page after login
+			await signUpWithEmail(email, password);
+			alert("Verification email sent! Please check your inbox.");
+			navigate("/login"); // Redirect to login after sign-up
 		} catch (error) {
 			setError(error.message);
 		}
@@ -29,8 +30,8 @@ export default function Login() {
 			</nav>
 			<div className="flex flex-col items-center justify-center w-screen h-screen bg-slate-950 dark:bg-gray-900">
 				<Card className="p-8 bg-gray-800 rounded-lg shadow-lg w-96 dark:bg-gray-800">
-					<h1 className="mb-6 text-3xl font-bold text-center text-white">Login</h1>
-					<form onSubmit={handleLogin} className="flex flex-col space-y-6">
+					<h1 className="mb-6 text-3xl font-bold text-center text-white">Setup Your Account</h1>
+					<form onSubmit={handleSignup} className="flex flex-col space-y-6">
 						<div>
 							<label className="block text-sm font-medium text-gray-300">Email</label>
 							<input
@@ -48,21 +49,21 @@ export default function Login() {
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 								className="block w-full px-4 py-2 mt-1 text-gray-200 bg-gray-700 border border-gray-600 rounded-md"
-								placeholder="Enter your password"
+								placeholder="Create a password"
 							/>
 						</div>
 						<button
 							type="submit"
 							className="w-full px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-700"
 						>
-							Login
+							Complete Setup
 						</button>
 						{error && <p className="text-red-500 text-center">{error}</p>}
 					</form>
 					<p className="mt-6 text-center text-gray-400">
-						Don't have an account?{" "}
-						<button onClick={() => navigate("/signin")} className="text-indigo-400 hover:underline">
-							Sign Up
+						Already have an account?{" "}
+						<button onClick={() => navigate("/login")} className="text-indigo-400 hover:underline">
+							Login
 						</button>
 					</p>
 				</Card>
