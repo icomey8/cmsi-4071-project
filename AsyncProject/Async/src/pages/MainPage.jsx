@@ -1,160 +1,260 @@
-import React, { useState, useRef } from 'react';
-import { format, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
+import React, { useState, useEffect, useRef } from 'react';
 import { FaBars } from 'react-icons/fa';
-import Calendar from '@/components/Calendar';
-import ProfileModal from '@/components/ProfileModal';
+import { useNavigate } from 'react-router-dom';
+import { auth, db, storage } from '../firebase/firebase';
+import { doc, getDoc, updateDoc, collection, onSnapshot } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import Logo from '/assets/app-logo.svg';
+import userIcon from '/assets/user.svg';
 
 function MainPage() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [plans, setPlans] = useState({
-    "2024-10-30": { summary: "Project Due" },
-    "2024-11-01": { summary: "Meeting with Prof. Smith" },
-  });
   const [showClassInput, setShowClassInput] = useState(false);
   const [classCode, setClassCode] = useState('');
-  const [showProfileModal, setShowProfileModal] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [userData, setUserData] = useState({
+    name: '',
+    role: '',
+    profilePictureUrl: '',
+  });
+  const [defaultColor, setDefaultColor] = useState('');
+  const [classes, setClasses] = useState([]);
+  const [editName, setEditName] = useState('');
   const [showClassesDropdown, setShowClassesDropdown] = useState(false);
-  const [newPlan, setNewPlan] = useState('');
-  const [planMonth, setPlanMonth] = useState('');
-  const [planDay, setPlanDay] = useState('');
-  const [planYear, setPlanYear] = useState('');
   const inputRef = useRef(null);
+  const navigate = useNavigate();
 
-  const handleOutsideClick = (e) => {
-    if (inputRef.current && !inputRef.current.contains(e.target)) {
-      setShowClassInput(false);
-    }
-  };
+  // Fetch user data and classes
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userId = auth.currentUser?.uid;
+        const userDoc = await getDoc(doc(db, 'users', userId));
 
-  React.useEffect(() => {
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUserData(userData);
+          setEditName(userData.name);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+    fetchUserData();
   }, []);
 
-  const handleAddPlan = () => {
-    if (!newPlan.trim() || !planMonth.trim() || !planDay.trim() || !planYear.trim()) return;
+  useEffect(() => {
+    const colors = ['#FFD700', '#8A2BE2', '#DC143C', '#20B2AA'];
+    setDefaultColor(colors[Math.floor(Math.random() * colors.length)]);
+  }, []);
 
-    const dateKey = format(new Date(`${planYear}-${planMonth}-${planDay}`), 'yyyy-MM-dd');
-    setPlans((prevPlans) => ({
-      ...prevPlans,
-      [dateKey]: { summary: newPlan },
-    }));
-    setNewPlan('');
-    setPlanMonth('');
-    setPlanDay('');
-    setPlanYear('');
+  // Fetch classes from Firestore
+  useEffect(() => {
+    const classesRef = collection(db, 'classes');
+    const unsubscribe = onSnapshot(classesRef, (snapshot) => {
+      const fetchedClasses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setClasses(fetchedClasses);
+    });
+    return unsubscribe;
+  }, []);
+
+  const handleAddClass = () => {
+    if (!classCode.trim()) return;
+    setClassCode('');
+    setShowClassInput(false);
   };
 
-  const getWeeklyNotifications = () => {
-    const startOfWeekDate = startOfWeek(selectedDate);
-    const endOfWeekDate = endOfWeek(selectedDate);
-    const daysOfWeek = eachDayOfInterval({ start: startOfWeekDate, end: endOfWeekDate });
+  const toggleProfileModal = () => setShowProfileModal(!showProfileModal);
 
-    return daysOfWeek
-      .map((day) => {
-        const dateKey = format(day, 'yyyy-MM-dd');
-        return plans[dateKey] ? { date: format(day, 'MMMM do, yyyy'), summary: plans[dateKey].summary } : null;
-      })
-      .filter(Boolean);
+  const handleNameUpdate = async () => {
+    try {
+      const userId = auth.currentUser?.uid;
+      await updateDoc(doc(db, 'users', userId), { name: editName });
+      setUserData(prevData => ({ ...prevData, name: editName }));
+    } catch (error) {
+      console.error("Error updating name:", error);
+    }
   };
 
   return (
     <>
-      <nav className="p-4 bg-gray-800 flex justify-between items-center">
-        <FaBars onClick={() => setShowSidebar(!showSidebar)} className="text-white text-2xl cursor-pointer" />
-        <div className="container flex items-center justify-center mx-auto">
-          <div className="text-lg font-semibold text-white">
-            <h1>Async</h1>
-          </div>
-        </div>
+      {/* Navigation Bar */}
+      <nav className="fixed top-0 left-0 w-full p-4 bg-gray-800 flex justify-between items-center z-50">
+        <button onClick={() => setShowSidebar(!showSidebar)} className="text-white text-2xl">
+          <FaBars />
+        </button>
+        <button onClick={() => setShowClassInput(true)} className="px-4 py-2 bg-indigo-600 text-white rounded-md">
+          Class
+        </button>
       </nav>
 
+      {/* Sidebar */}
       {showSidebar && (
         <div className="fixed inset-0 z-40 flex">
-          <div className={`w-64 h-full bg-white dark:bg-gray-900 p-6 shadow-lg transform transition-transform duration-300 ease-in-out ${showSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Async</h2>
-            <button className="w-full text-left text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2" onClick={() => setShowClassesDropdown(!showClassesDropdown)}>
+          <div className="w-64 h-full bg-gray-800 p-6 shadow-lg">
+            <h2 className="text-3xl font-bold text-gray-100 mb-6 cursor-pointer" onClick={() => {
+              setShowSidebar(false);
+              navigate("/main");
+            }}>
+              Dashboard
+            </h2>
+
+            {/* Discussion Board Button */}
+            <button
+              onClick={() => {
+                setShowSidebar(false);
+                navigate("/discussions");
+              }}
+              className="w-full text-left text-lg font-semibold text-gray-100 mb-4"
+            >
+              Discussion Board
+            </button>
+
+            {/* Classes Dropdown */}
+            <button
+              className="w-full text-left text-lg font-semibold text-gray-100 mb-2"
+              onClick={() => setShowClassesDropdown(!showClassesDropdown)}
+            >
               Classes
             </button>
             {showClassesDropdown && (
               <div className="pl-4 space-y-2">
-                <div className="text-gray-700 dark:text-gray-300 cursor-pointer">CMSI 3100</div>
-                <div className="text-gray-700 dark:text-gray-300 cursor-pointer">CMSI 201</div>
-                <div className="text-gray-700 dark:text-gray-300 cursor-pointer">CMSI 301</div>
+                {classes.map((classItem) => (
+                  <div
+                    key={classItem.id}
+                    className="text-gray-300 cursor-pointer"
+                    onClick={() => {
+                      setShowSidebar(false);
+                      navigate(`/discussions/${classItem.id}`);
+                    }}
+                  >
+                    {classItem.name}
+                  </div>
+                ))}
+                <button
+                  onClick={() => setShowClassInput(true)}
+                  className="w-full text-left text-gray-200 underline mt-2"
+                >
+                  + Add New Class
+                </button>
               </div>
             )}
+
+            {/* Profile Button */}
+            <div
+              onClick={toggleProfileModal}
+              className="absolute bottom-6 left-6 flex items-center space-x-3 cursor-pointer"
+            >
+              <img
+                src={userData.profilePictureUrl || userIcon}
+                alt="User"
+                className="w-12 h-12 rounded-full"
+                style={{ backgroundColor: userData.profilePictureUrl ? 'transparent' : defaultColor }}
+              />
+              <div>
+                <p className="text-gray-200 font-medium">{userData.name}</p>
+                <p className="text-gray-400 text-sm">{userData.role}</p>
+              </div>
+            </div>
           </div>
-          <div className="flex-1 bg-gray-800 bg-opacity-50 transition-opacity duration-300 ease-in-out" onClick={() => setShowSidebar(false)}></div>
+          <div className="flex-1 bg-gray-900 bg-opacity-50" onClick={() => setShowSidebar(false)}></div>
         </div>
       )}
 
-      <div className="flex flex-col items-center w-screen min-h-screen bg-slate-950 dark:bg-gray-900 p-8 space-y-8">
-        <div className="flex w-full max-w-4xl items-center justify-between mb-4">
-          <div className="w-1/2" ref={inputRef}>
-            {showClassInput ? (
-              <div className="p-4 bg-white rounded-lg shadow-lg dark:bg-gray-800">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Enter Class Code
-                </label>
-                <input
-                  type="text"
-                  maxLength="10"
-                  className="w-full px-3 py-2 mt-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
-                  placeholder="8-10 character code"
-                  value={classCode}
-                  onChange={(e) => setClassCode(e.target.value)}
+      {/* Profile Modal */}
+      {showProfileModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-full max-w-md p-6 bg-gray-800 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold text-center text-white mb-6">Your Profile</h2>
+            <div className="flex justify-center mb-4">
+              <div
+                className="w-28 h-28 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: userData.profilePictureUrl ? 'transparent' : defaultColor }}
+              >
+                <img
+                  src={userData.profilePictureUrl || userIcon}
+                  alt="User Profile"
+                  className="w-28 h-28 rounded-full"
                 />
               </div>
-            ) : (
-              <button onClick={() => setShowClassInput(true)} className="px-4 py-3 text-center font-semibold text-gray-900 bg-gray-200 rounded-md shadow-lg hover:bg-gray-300 focus:outline-none dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700">
-                Click here to add a class
-              </button>
-            )}
-          </div>
-
-          <div onClick={() => setShowProfileModal(true)} className="flex items-center cursor-pointer space-x-2">
-            <div className="flex flex-col text-right mr-2">
-              <span className="text-gray-900 font-medium dark:text-gray-100">John Doe</span>
-              <span className="text-sm text-gray-600 dark:text-gray-400">Student/Teacher</span>
             </div>
-            <div className="w-10 h-10 rounded-full bg-gray-400 dark:bg-gray-600"></div>
+            <div className="text-center text-white">
+              <label className="block text-sm font-medium text-gray-300">Name</label>
+              <input
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                onBlur={handleNameUpdate}
+                className="w-full px-3 py-2 mt-2 text-center text-gray-200 bg-gray-700 border border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              />
+              <p className="text-sm font-medium text-gray-300 mt-4">Role</p>
+              <p className="text-lg font-semibold text-indigo-400">{userData.role}</p>
+            </div>
+            <button
+              onClick={toggleProfileModal}
+              className="w-full px-4 py-2 mt-6 font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
+            >
+              Close
+            </button>
           </div>
         </div>
+      )}
 
-        <Calendar selectedDate={selectedDate} setSelectedDate={setSelectedDate} plans={plans} />
-        
-        <div className="flex w-full max-w-4xl space-x-4 mt-4">
-          <div className="w-1/2 p-4 bg-white rounded-lg shadow-lg dark:bg-gray-800">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Add Plan</h3>
-            <div className="mt-2 flex space-x-2">
-              <input type="text" placeholder="MM" value={planMonth} onChange={(e) => setPlanMonth(e.target.value)} className="w-1/3 px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
-              <input type="text" placeholder="DD" value={planDay} onChange={(e) => setPlanDay(e.target.value)} className="w-1/3 px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
-              <input type="text" placeholder="YYYY" value={planYear} onChange={(e) => setPlanYear(e.target.value)} className="w-1/3 px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
+      {/* Main Content */}
+      <div className="flex flex-col items-center w-screen min-h-screen bg-slate-950 dark:bg-gray-900 p-8 space-y-8 mt-20">
+        {/* Add Class Modal */}
+        {showClassInput && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+            <div className="w-full max-w-md p-6 bg-gray-800 rounded-lg shadow-lg" ref={inputRef}>
+              <h3 className="text-lg font-semibold text-gray-100 mb-4">Add Class by Code</h3>
+              <input
+                type="text"
+                maxLength="10"
+                className="w-full px-3 py-2 mb-4 border border-gray-700 rounded-md bg-gray-900 text-gray-100 focus:ring-indigo-500"
+                placeholder="Enter class code"
+                value={classCode}
+                onChange={(e) => setClassCode(e.target.value)}
+              />
+              <div className="flex justify-end space-x-2">
+                <button
+                  onClick={() => setShowClassInput(false)}
+                  className="px-4 py-2 bg-gray-600 text-gray-100 rounded-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddClass}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-md"
+                >
+                  Add Class
+                </button>
+              </div>
             </div>
-            <input type="text" placeholder="Plan Details" value={newPlan} onChange={(e) => setNewPlan(e.target.value)} className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
-            <button onClick={handleAddPlan} className="mt-2 w-full px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600">Add Plan</button>
           </div>
+        )}
 
-          <div className="w-1/2 p-4 bg-white rounded-lg shadow-lg dark:bg-gray-800">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Weekly Notifications</h3>
-            <ul className="mt-2 space-y-2">
-              {getWeeklyNotifications().length > 0 ? (
-                getWeeklyNotifications().map((notification, index) => (
-                  <li key={index} className="p-2 bg-gray-100 dark:bg-gray-700 rounded-md">
-                    <p className="text-gray-900 dark:text-gray-100">{notification.date}</p>
-                    <p className="text-gray-700 dark:text-gray-300 text-sm">{notification.summary}</p>
-                  </li>
-                ))
-              ) : (
-                <p className="text-gray-500 dark:text-gray-400">No notifications for this week</p>
-              )}
-            </ul>
-          </div>
+        {/* Google Calendar Section */}
+        <div className="w-full max-w-4xl p-6 bg-gray-800 rounded-lg shadow-lg mt-4">
+          <h3 className="text-lg font-semibold text-gray-100 mb-4">Your Calendar</h3>
+          <iframe
+            src="https://calendar.google.com/calendar/embed?src=your_calendar_id&ctz=your_timezone"
+            style={{ border: 0 }}
+            width="100%"
+            height="600"
+            frameBorder="0"
+            scrolling="no"
+          ></iframe>
+        </div>
+
+        {/* Weekly Notifications */}
+        <div className="w-full max-w-4xl p-6 bg-gray-800 rounded-lg shadow-lg mt-4">
+          <h3 className="text-lg font-semibold text-gray-100 mb-4">Weekly Notifications</h3>
+          <ul className="text-gray-300 space-y-2">
+            <li>2024-10-30: Project Due</li>
+            <li>2024-11-01: Meeting with Prof. Smith</li>
+          </ul>
         </div>
       </div>
-
-      {showProfileModal && <ProfileModal onClose={() => setShowProfileModal(false)} />}
     </>
   );
 }
