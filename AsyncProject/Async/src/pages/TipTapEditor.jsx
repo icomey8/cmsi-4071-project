@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import "katex/dist/katex.min.css";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import CharacterCount from "@tiptap/extension-character-count";
 import Link from "@tiptap/extension-link";
 import Heading from "@tiptap/extension-heading";
+import { Mathematics } from "@tiptap-pro/extension-mathematics";
 import {
 	MdFormatBold,
 	MdFormatItalic,
@@ -20,7 +22,7 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/Select"
+} from "@/components/Select";
 import "./styles.scss";
 
 const BlueCircle = () => {
@@ -46,8 +48,16 @@ const TipTapEditor = () => {
 			Heading.configure({
 				levels: [1, 2, 3],
 			}),
+			Mathematics,
 		],
-		content: "<p>Hello, world!</p>",
+		content: `<p>Hello, world!</p>
+		<p>
+			Did you know that $3 * 3 = 9$? Isn't that crazy? Also Pythagoras' theorem is $a^2 + b^2 = c^2$.<br />
+			Also the square root of 2 is $\\sqrt{2}$. If you want to know more about $\\LaTeX$ visit <a href="https://katex.org/docs/supported.html" target="_blank">katex.org</a>.
+		</p>
+		<code>
+			<pre>$\\LaTeX$</pre>
+		</code>`,
 		editorProps: {
 			attributes: {
 				class:
@@ -68,10 +78,10 @@ const TipTapEditor = () => {
 	];
 
 	const getCurrentHeading = () => {
-		if (editor.isActive('heading', { level: 1 })) return 'heading-1';
-		if (editor.isActive('heading', { level: 2 })) return 'heading-2';
-		if (editor.isActive('heading', { level: 3 })) return 'heading-3';
-		return 'paragraph';
+		if (editor.isActive("heading", { level: 1 })) return "heading-1";
+		if (editor.isActive("heading", { level: 2 })) return "heading-2";
+		if (editor.isActive("heading", { level: 3 })) return "heading-3";
+		return "paragraph";
 	};
 
 	const addLink = () => {
@@ -97,10 +107,10 @@ const TipTapEditor = () => {
 				<Select
 					value={getCurrentHeading()}
 					onValueChange={(value) => {
-						if (value === 'paragraph') {
+						if (value === "paragraph") {
 							editor.chain().focus().setParagraph().run();
 						} else {
-							const level = parseInt(value.split('-')[1]);
+							const level = parseInt(value.split("-")[1]);
 							editor.chain().focus().toggleHeading({ level }).run();
 						}
 					}}
@@ -110,8 +120,8 @@ const TipTapEditor = () => {
 					</SelectTrigger>
 					<SelectContent className="bg-slate-800 border-slate-700">
 						{headingOptions.map((option) => (
-							<SelectItem 
-								key={option.value} 
+							<SelectItem
+								key={option.value}
 								value={option.value}
 								className="text-slate-200 hover:bg-slate-700 focus:bg-slate-700"
 							>
