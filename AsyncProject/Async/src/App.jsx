@@ -48,3 +48,6 @@ export default function App() {
 //npm install react-router-dom
 // NEW -> npm install @tiptap/extension-character-count
 // NEW -> npm install firebase
+// NEW -> npm install lucide-react
+// NEW -> npm install radix-ui/react
+// NEW -> npm install class-variance-authority
