@@ -43,9 +43,7 @@ const TipTapEditor = ({ content, setContent }) => {
             Underline,
             Link,
             CharacterCount,
-            Heading.configure({
-                levels: [1, 2, 3],
-            }),
+            Heading.configure({ levels: [1, 2, 3] }),
         ],
         content: content,
         editorProps: {
@@ -81,12 +79,7 @@ const TipTapEditor = ({ content, setContent }) => {
     const addLink = () => {
         const url = prompt("Enter the URL");
         if (url) {
-            editor
-                .chain()
-                .focus()
-                .extendMarkRange("link")
-                .setLink({ href: url })
-                .run();
+            editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
         }
     };
 
@@ -96,7 +89,6 @@ const TipTapEditor = ({ content, setContent }) => {
 
     return (
         <div className="h-[400px]">
-            {/* Toolbar Buttons */}
             <div className="flex items-center p-2 mb-4 space-x-2 rounded-t bg-slate-900">
                 <Select
                     value={getCurrentHeading()}
@@ -172,12 +164,11 @@ const TipTapEditor = ({ content, setContent }) => {
                     <MdOutlineLinkOff className="w-5 h-5" />
                 </button>
 
-                <div className="flex items-center p-4 text-xs text-slate-500 ">
-                    <BlueCircle /> {editor.storage.characterCount.words()} words
+                <div className="flex items-center p-4 text-xs text-slate-500">
+					<BlueCircle /> {editor.storage.characterCount.words()} words
                 </div>
             </div>
 
-            {/* Editor Content */}
             <div className="min-h-[300px] rounded bg-slate-900">
                 <EditorContent editor={editor} className="h-full" />
             </div>
