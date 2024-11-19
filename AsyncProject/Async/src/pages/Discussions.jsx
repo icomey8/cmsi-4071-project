@@ -1,5 +1,7 @@
 import { useState } from "react";
-import TiptapEditor from "./TipTapEditor.jsx";
+import Sidebar from "../components/Sidebar";
+import DiscussionContent from "../components/DiscussionContent";
+import NewDiscussionForm from "../components/NewDiscussionForm";
 
 const initialDiscussions = [
 	{
@@ -36,8 +38,6 @@ export default function Discussions() {
 	const [discussions, setDiscussions] = useState(initialDiscussions);
 	const [newDiscussionTitle, setNewDiscussionTitle] = useState("");
 	const [showForm, setShowForm] = useState(false);
-	const [newComment, setNewComment] = useState("");
-	const currentUser = "Commenter";
 
 	const handleDiscussionClick = (discussion) => {
 		setSelectedDiscussion(discussion);
@@ -64,83 +64,29 @@ export default function Discussions() {
 	};
 
 	return (
-		<>
-			<div className="flex p-0 m-0">
-				<aside className="fixed w-64 h-screen p-4 text-white bg-gray-800">
-					<h2 className="mb-4 text-xl font-bold">Discussion Boards</h2>
-					<ul>
-						{discussions.map((discussion) => (
-							<li key={discussion.id}>
-								<button
-									className="block w-full px-4 py-2 text-left truncate hover:bg-gray-700 whitespace-nowrap"
-									onClick={() => handleDiscussionClick(discussion)}
-								>
-									{discussion.title}
-								</button>
-							</li>
-						))}
-					</ul>
-					<button
-						className="w-full px-4 py-2 mt-4 text-white bg-blue-600 rounded hover:bg-blue-500"
-						onClick={handleAddDiscussion}
-					>
-						Add New Discussion
-					</button>
-				</aside>
+		<div className="flex p-0 m-0">
+			<Sidebar
+				discussions={discussions}
+				onDiscussionClick={handleDiscussionClick}
+				onAddDiscussion={handleAddDiscussion}
+			/>
 
-				<div className="flex-1 ml-64">
-					<div className="p-4 m-4 border border-gray-300 rounded">
-						{selectedDiscussion ? (
-							<div>
-								<h2 className="text-2xl font-bold">
-									{selectedDiscussion.title}
-								</h2>
-								<div
-									dangerouslySetInnerHTML={{
-										__html: selectedDiscussion.content,
-									}}
-								/>
-							</div>
-						) : (
-							<p>Select a discussion to see the content.</p>
-						)}
-					</div>
-
-					{showForm && (
-						<div className="p-4 m-4 border border-gray-300 rounded">
-							<div className="flex justify-between w-full">
-								<h2 className="mb-4 text-xl font-bold">Add New Post</h2>
-								<button
-									onClick={() => setShowForm(false)}
-									className="px-2 py-1 mb-2 text-white bg-red-600 rounded hover:bg-red-500"
-								>
-									Exit
-								</button>
-							</div>
-							<form onSubmit={handleSubmit}>
-								<input
-									type="text"
-									placeholder="Discussion Title"
-									className="w-full p-2 mb-2 border border-gray-300 rounded"
-									value={newDiscussionTitle}
-									onChange={(e) => setNewDiscussionTitle(e.target.value)}
-									required
-								/>
-								<TiptapEditor
-									content={newDiscussionContent}
-									setContent={setNewDiscussionContent}
-								/>
-								<button
-									type="submit"
-									className="px-4 py-2 mt-4 text-white bg-blue-600 rounded hover:bg-blue-500"
-								>
-									Submit
-								</button>
-							</form>
-						</div>
-					)}
+			<div className="flex-1 ml-64">
+				<div className="p-4 m-4 border border-gray-300 rounded">
+					<DiscussionContent discussion={selectedDiscussion} />
 				</div>
+
+				{showForm && (
+					<NewDiscussionForm
+						onSubmit={handleSubmit}
+						onClose={() => setShowForm(false)}
+						newDiscussionTitle={newDiscussionTitle}
+						setNewDiscussionTitle={setNewDiscussionTitle}
+						newDiscussionContent={newDiscussionContent}
+						setNewDiscussionContent={setNewDiscussionContent}
+					/>
+				)}
 			</div>
-		</>
+		</div>
 	);
 }
