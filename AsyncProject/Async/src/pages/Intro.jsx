@@ -21,8 +21,8 @@ function Intro() {
           </div>
           
           <div className="flex space-x-4 mr-4">
-            <button onClick={() => navigate('/signin')} className="button-secondary w-button">Sign In</button>
-            <button onClick={() => navigate('/login')} className="button w-button">Get Started</button>
+            <button onClick={() => navigate('/login')} className="button-secondary w-button">Sign In</button>
+            <button onClick={() => navigate('/signin')} className="button w-button">Get Started</button>
           </div>
         </div>
       </nav>
