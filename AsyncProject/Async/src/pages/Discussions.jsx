@@ -48,20 +48,22 @@ export default function Discussions() {
 	};
 
 	const handleSubmit = (e) => {
-		e.preventDefault();
+		e.preventDefault();	  
 		const newDiscussion = {
-			id: discussions.length + 1,
-			title: newDiscussionTitle,
-			content: newDiscussionContent,
-			author: "New User",
-			createdAt: new Date().toISOString(),
-			comments: [],
+		  id: discussions.length + 1,
+		  title: newDiscussionTitle,
+		  content: newDiscussionContent || "<p>No content provided</p>",
+		  author: "New User",
+		  createdAt: new Date().toISOString(),
+		  comments: [],
 		};
+	  
 		setDiscussions([...discussions, newDiscussion]);
+		setSelectedDiscussion(newDiscussion);
 		setNewDiscussionTitle("");
-		setNewDiscussionContent("<p>Start writing...</p>");
+		setNewDiscussionContent("");
 		setShowForm(false);
-	};
+	  };
 
 	return (
 		<div className="flex p-0 m-0">
@@ -70,7 +72,6 @@ export default function Discussions() {
 				onDiscussionClick={handleDiscussionClick}
 				onAddDiscussion={handleAddDiscussion}
 			/>
-
 			<div className="flex-1 mx-16">
 				<div className="p-4 m-4 border border-gray-300 rounded">
 					<DiscussionContent discussion={selectedDiscussion} />
