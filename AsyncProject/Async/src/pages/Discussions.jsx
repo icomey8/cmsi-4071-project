@@ -71,7 +71,7 @@ export default function Discussions() {
 				onAddDiscussion={handleAddDiscussion}
 			/>
 
-			<div className="flex-1 ml-64">
+			<div className="flex-1 mx-16">
 				<div className="p-4 m-4 border border-gray-300 rounded">
 					<DiscussionContent discussion={selectedDiscussion} />
 				</div>

@@ -116,3 +116,20 @@
   .animate-color-change {
     animation: color-change 3s infinite;
   }
+
+  .ProseMirror {
+    min-height: 500px;
+    padding: 1rem;
+    
+    &:focus {
+      outline: none;
+    }
+  
+    > * + * {
+      margin-top: 0.75em;
+    }
+  
+    p {
+      color: #e2e8f0; // slate-200
+    }
+  }

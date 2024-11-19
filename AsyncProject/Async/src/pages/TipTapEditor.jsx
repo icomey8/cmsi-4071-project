@@ -5,9 +5,9 @@ import Underline from "@tiptap/extension-underline";
 import CharacterCount from "@tiptap/extension-character-count";
 import Link from "@tiptap/extension-link";
 import {
-  MdFormatBold,
-  MdFormatItalic,
-  MdFormatUnderlined,
+	MdFormatBold,
+	MdFormatItalic,
+	MdFormatUnderlined,
 	MdFormatListBulleted,
 	MdFormatListNumbered,
 	MdAddLink,
@@ -32,6 +32,12 @@ const TipTapEditor = () => {
 	const editor = useEditor({
 		extensions: [StarterKit, Underline, Link, CharacterCount],
 		content: "<p>Hello, world!</p>",
+		editorProps: {
+			attributes: {
+				class:
+					"prose prose-slate prose-invert max-w-none min-h-[300px] focus:outline-none",
+			},
+		},
 	});
 
 	if (!editor) {
@@ -55,65 +61,64 @@ const TipTapEditor = () => {
 	};
 
 	return (
-		<div>
+		<div className="h-[400px]">
 			{/* Toolbar Buttons */}
-			<div className="flex mb-4 space-x-2">
+			<div className="flex items-center mb-4 space-x-2 rounded-t bg-slate-900 ">
 				<button
 					onClick={() => editor.chain().focus().toggleBold().run()}
-					className={`p-2 border ${
-						editor.isActive("bold") ? "bg-gray-300" : ""
+					className={`p-2 border h-8 rounded-md ${
+						editor.isActive("bold") ? "bg-gray-800" : ""
 					}`}
 				>
-					<MdFormatBold />
+					<MdFormatBold className="w-5 h-5" />
 				</button>
 				<button
 					onClick={() => editor.chain().focus().toggleItalic().run()}
-					className={`p-2 border ${
-						editor.isActive("italic") ? "bg-gray-300" : ""
+					className={`p-2 border h-8 rounded-md ${
+						editor.isActive("italic") ? "bg-gray-800" : ""
 					}`}
 				>
-					<MdFormatItalic />
+					<MdFormatItalic className="w-5 h-5"/>
 				</button>
 				<button
 					onClick={() => editor.chain().focus().toggleUnderline().run()}
-					className={`p-2 border ${
-						editor.isActive("underline") ? "bg-gray-300" : ""
+					className={`p-2 h-8 border rounded-md ${
+						editor.isActive("underline") ? "bg-gray-800" : ""
 					}`}
 				>
-					<MdFormatUnderlined />
+					<MdFormatUnderlined className="w-5 h-5" />
 				</button>
 				<button
 					onClick={() => editor.chain().focus().toggleBulletList().run()}
-					className={`p-2 border ${
-						editor.isActive("bulletList") ? "bg-gray-300" : ""
+					className={`p-2 border h-8 rounded-md ${
+						editor.isActive("bulletList") ? "bg-gray-800" : ""
 					}`}
 				>
-					<MdFormatListBulleted />
+					<MdFormatListBulleted className="w-5 h-5" />
 				</button>
 				<button
 					onClick={() => editor.chain().focus().toggleOrderedList().run()}
-					className={`p-2 border ${
-						editor.isActive("orderedList") ? "bg-gray-300" : ""
+					className={`p-2 border h-8 rounded-md ${
+						editor.isActive("orderedList") ? "bg-gray-800" : ""
 					}`}
 				>
-					<MdFormatListNumbered />
+					<MdFormatListNumbered className="w-5 h-5" />
 				</button>
 				<button onClick={addLink} className="p-2 border">
-					<MdAddLink />
+					<MdAddLink className="w-5 h-5" />
 				</button>
 				<button onClick={removeLink} className="p-2 border">
-					<MdOutlineLinkOff />
+					<MdOutlineLinkOff className="w-5 h-5" />
 				</button>
+
+				<div className="flex items-center p-4 text-xs text-slate-500 ">
+					<BlueCircle /> {editor.storage.characterCount.words()} words
+				</div>
 			</div>
 
 			{/* Editor Content */}
-			<div className="p-4 border rounded">
-				<EditorContent editor={editor} />
-				<div className="flex items-center pt-4 text-xs text-gray-500">
-					{" "}
-					<BlueCircle></BlueCircle> {editor.storage.characterCount.words()}{" "}
-					words
-				</div>
+			<div className="min-h-[400px]  rounded  bg-slate-900">
+				<EditorContent editor={editor} className="h-full" />
 			</div>
 		</div>
 	);
