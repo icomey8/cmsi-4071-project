@@ -4,6 +4,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import CharacterCount from "@tiptap/extension-character-count";
 import Link from "@tiptap/extension-link";
+import Heading from "@tiptap/extension-heading";
 import {
 	MdFormatBold,
 	MdFormatItalic,
@@ -13,6 +14,13 @@ import {
 	MdAddLink,
 	MdOutlineLinkOff,
 } from "react-icons/md";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/Select"
 import "./styles.scss";
 
 const BlueCircle = () => {
@@ -30,12 +38,20 @@ const BlueCircle = () => {
 
 const TipTapEditor = () => {
 	const editor = useEditor({
-		extensions: [StarterKit, Underline, Link, CharacterCount],
+		extensions: [
+			StarterKit,
+			Underline,
+			Link,
+			CharacterCount,
+			Heading.configure({
+				levels: [1, 2, 3],
+			}),
+		],
 		content: "<p>Hello, world!</p>",
 		editorProps: {
 			attributes: {
 				class:
-					"prose prose-slate prose-invert max-w-none min-h-[300px] focus:outline-none",
+					"prose prose-slate prose-invert max-w-none min-h-[300px] focus:outline-none bg-slate-800",
 			},
 		},
 	});
@@ -43,6 +59,20 @@ const TipTapEditor = () => {
 	if (!editor) {
 		return null;
 	}
+
+	const headingOptions = [
+		{ value: "paragraph", label: "Paragraph" },
+		{ value: "heading-1", label: "Heading 1" },
+		{ value: "heading-2", label: "Heading 2" },
+		{ value: "heading-3", label: "Heading 3" },
+	];
+
+	const getCurrentHeading = () => {
+		if (editor.isActive('heading', { level: 1 })) return 'heading-1';
+		if (editor.isActive('heading', { level: 2 })) return 'heading-2';
+		if (editor.isActive('heading', { level: 3 })) return 'heading-3';
+		return 'paragraph';
+	};
 
 	const addLink = () => {
 		const url = prompt("Enter the URL");
@@ -63,7 +93,34 @@ const TipTapEditor = () => {
 	return (
 		<div className="h-[400px]">
 			{/* Toolbar Buttons */}
-			<div className="flex items-center mb-4 space-x-2 rounded-t bg-slate-900 ">
+			<div className="flex items-center p-2 mb-4 space-x-2 rounded-t bg-slate-900">
+				<Select
+					value={getCurrentHeading()}
+					onValueChange={(value) => {
+						if (value === 'paragraph') {
+							editor.chain().focus().setParagraph().run();
+						} else {
+							const level = parseInt(value.split('-')[1]);
+							editor.chain().focus().toggleHeading({ level }).run();
+						}
+					}}
+				>
+					<SelectTrigger className="w-[140px] bg-slate-800 border-slate-700">
+						<SelectValue placeholder="Style" />
+					</SelectTrigger>
+					<SelectContent className="bg-slate-800 border-slate-700">
+						{headingOptions.map((option) => (
+							<SelectItem 
+								key={option.value} 
+								value={option.value}
+								className="text-slate-200 hover:bg-slate-700 focus:bg-slate-700"
+							>
+								{option.label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
+
 				<button
 					onClick={() => editor.chain().focus().toggleBold().run()}
 					className={`p-2 border h-8 rounded-md ${
@@ -78,7 +135,7 @@ const TipTapEditor = () => {
 						editor.isActive("italic") ? "bg-gray-800" : ""
 					}`}
 				>
-					<MdFormatItalic className="w-5 h-5"/>
+					<MdFormatItalic className="w-5 h-5" />
 				</button>
 				<button
 					onClick={() => editor.chain().focus().toggleUnderline().run()}
@@ -117,7 +174,7 @@ const TipTapEditor = () => {
 			</div>
 
 			{/* Editor Content */}
-			<div className="min-h-[400px]  rounded  bg-slate-900">
+			<div className="min-h-[300px]  rounded  bg-slate-900">
 				<EditorContent editor={editor} className="h-full" />
 			</div>
 		</div>

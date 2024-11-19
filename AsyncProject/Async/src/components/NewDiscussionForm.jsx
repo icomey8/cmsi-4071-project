@@ -23,7 +23,7 @@ export default function NewDiscussionForm({
         <input
           type="text"
           placeholder="Discussion Title"
-          className="w-full p-2 mb-2 border border-gray-300 rounded"
+          className="w-full px-3 py-2 border rounded-md bg-slate-800 border-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           value={newDiscussionTitle}
           onChange={(e) => setNewDiscussionTitle(e.target.value)}
           required
