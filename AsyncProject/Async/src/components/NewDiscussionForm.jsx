@@ -1,14 +1,19 @@
-import React from "react";
-import TiptapEditor from "../pages/TipTapEditor";
+import React, { useState } from "react";
+import TipTapEditor from "../pages/TipTapEditor";
 
-export default function NewDiscussionForm({
-  onSubmit,
-  onClose,
-  newDiscussionTitle,
-  setNewDiscussionTitle,
-  newDiscussionContent,
-  setNewDiscussionContent,
-}) {
+export default function NewDiscussionForm({ onSubmit, onClose }) {
+  const [newDiscussionTitle, setNewDiscussionTitle] = useState("");
+  const [newDiscussionContent, setNewDiscussionContent] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (newDiscussionTitle.trim() && newDiscussionContent.trim()) {
+      onSubmit(newDiscussionTitle, newDiscussionContent);
+      setNewDiscussionTitle("");
+      setNewDiscussionContent("");
+    }
+  };
+
   return (
     <div className="p-4 m-4 border border-gray-300 rounded bg-slate-900 text-white">
       <div className="flex justify-between items-center w-full mb-4">
@@ -21,13 +26,7 @@ export default function NewDiscussionForm({
         </button>
       </div>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSubmit(e);
-        }}
-      >
-        {/* Title Input */}
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="Enter discussion title"
@@ -37,15 +36,13 @@ export default function NewDiscussionForm({
           required
         />
 
-        {/* Content Editor */}
         <div className="mb-4">
-          <TiptapEditor
+          <TipTapEditor
             content={newDiscussionContent}
             setContent={setNewDiscussionContent}
           />
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-500"
