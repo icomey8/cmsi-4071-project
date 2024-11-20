@@ -64,11 +64,11 @@ export default function DiscussionContent({ discussion, selectedClass, onAddComm
       <div className="flex flex-col flex-1 mt-6 overflow-hidden">
         <h3 className="text-xl font-bold mb-2">Comments</h3>
 
-        {/* Only show comments section if there are comments */}
+        {/* Comments Box */}
         {comments.length > 0 && (
           <div
             ref={commentsContainerRef}
-            className="flex-1 overflow-y-auto bg-slate-800 p-4 rounded-md max-h-96 flex flex-col-reverse"
+            className="flex-1 overflow-y-auto bg-slate-800 p-4 rounded-md max-h-96"
           >
             <ul className="space-y-4">
               {comments.map((comment) => (
