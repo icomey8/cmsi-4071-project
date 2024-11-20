@@ -1,0 +1,61 @@
+.mainpage-container {
+    display: flex;
+    color: #ffffff;
+    height: 100vh;
+    margin: 0;
+}
+
+.main-content {
+    flex: 1;
+    margin-left: 16rem;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.dashboard-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+} 
+
+.responsive-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.calendar {
+    flex: 2;
+}
+
+.right-panel {
+    display: flex; /* Adjust to row layout */
+    flex-direction: row;
+    gap: 1rem;
+    width: 100%;
+    height: auto; /* Adjust height dynamically */
+}
+
+.weekly-notifications {
+    flex: 3; /* 3 parts of the row width */
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+}
+
+.add-class-container {
+    flex: 1; /* 1 part of the row width */
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.add-class-container input {
+    width: 100%; /* Ensure the input box stretches to fill */
+    max-width: 100px; /* Maximum width to fit 10 digits */
+}
