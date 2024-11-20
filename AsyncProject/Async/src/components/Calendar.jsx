@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
-import { auth, db } from '../firebase/firebase'; // Ensure your Firebase config is correct
+import { auth, db } from '../firebase/firebase';
 import './Calendar.css';
 
 const Calendar = () => {
