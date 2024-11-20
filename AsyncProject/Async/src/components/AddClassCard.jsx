@@ -1,6 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { auth, db } from "../firebase/firebase";
-import { doc, updateDoc, collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { 
+  doc, 
+  updateDoc, 
+  collection, 
+  addDoc, 
+  query, 
+  where, 
+  getDocs, 
+  getDoc 
+} from "firebase/firestore";
 import { FaArrowLeft } from "react-icons/fa";
 
 export default function AddClassCard({ userRole }) {
@@ -9,6 +18,7 @@ export default function AddClassCard({ userRole }) {
   const [newClassName, setNewClassName] = useState("");
   const [uniqueCode, setUniqueCode] = useState("");
   const [generatedCode, setGeneratedCode] = useState(null);
+  const [isCreatingClass, setIsCreatingClass] = useState(false);
 
   // Generate a unique code for a new class
   const generateUniqueCode = async () => {
@@ -36,16 +46,21 @@ export default function AddClassCard({ userRole }) {
 
       if (!querySnapshot.empty) {
         const classDoc = querySnapshot.docs[0];
+        const classId = classDoc.id;
+        const classData = classDoc.data();
 
-        // Update the student's list of joined classes
-        await updateDoc(doc(db, "users", userId), {
-          joinedClasses: [...(userRole.joinedClasses || []), classDoc.id],
-        });
+        // Fetch current user data
+        const userRef = doc(db, "users", userId);
+        const userDoc = await getDoc(userRef);
+        const userData = userDoc.exists() ? userDoc.data() : {};
 
-        // Update the class's list of students
-        await updateDoc(doc(db, "classes", classDoc.id), {
-          student: [...classDoc.data().student, userId],
-        });
+        // Update the user's joinedClasses
+        const updatedJoinedClasses = Array.from(new Set([...(userData.joinedClasses || []), classId]));
+        await updateDoc(userRef, { joinedClasses: updatedJoinedClasses });
+
+        // Update the class's student list
+        const updatedStudents = Array.from(new Set([...(classData.student || []), userId]));
+        await updateDoc(doc(db, "classes", classId), { student: updatedStudents });
 
         setClassCodeInput("");
       }
@@ -57,9 +72,12 @@ export default function AddClassCard({ userRole }) {
   // Create a new class
   const handleCreateClass = async () => {
     const userId = auth.currentUser?.uid;
-    if (!newClassName.trim() || !uniqueCode || !userId) return;
+    if (!newClassName.trim() || !uniqueCode || !userId || isCreatingClass) return;
+
+    setIsCreatingClass(true); // Prevent multiple creations
 
     try {
+      // Add the new class to the `classes` collection
       const classRef = await addDoc(collection(db, "classes"), {
         name: newClassName,
         uniqueCode,
@@ -68,15 +86,27 @@ export default function AddClassCard({ userRole }) {
         discussions: [],
       });
 
-      await updateDoc(doc(db, "users", userId), {
-        createdClasses: [...(userRole.createdClasses || []), classRef.id],
-        joinedClasses: [...(userRole.joinedClasses || []), classRef.id],
+      const classId = classRef.id;
+
+      // Fetch current user data
+      const userRef = doc(db, "users", userId);
+      const userDoc = await getDoc(userRef);
+      const userData = userDoc.exists() ? userDoc.data() : {};
+
+      // Update the user's createdClasses and joinedClasses
+      const updatedCreatedClasses = Array.from(new Set([...(userData.createdClasses || []), classId]));
+      const updatedJoinedClasses = Array.from(new Set([...(userData.joinedClasses || []), classId]));
+      await updateDoc(userRef, {
+        createdClasses: updatedCreatedClasses,
+        joinedClasses: updatedJoinedClasses,
       });
 
       setGeneratedCode(uniqueCode);
       setNewClassName("");
     } catch (error) {
       console.error("Error creating class:", error);
+    } finally {
+      setIsCreatingClass(false); // Reset creation lock
     }
   };
 
@@ -106,7 +136,7 @@ export default function AddClassCard({ userRole }) {
         </button>
       )}
 
-      {/* Join Class (Students and Professors) */}
+      {/* Join Class */}
       {classAction === "joinClass" && (
         <div className="flex flex-col space-y-4 w-full max-w-sm">
           <input
@@ -126,7 +156,7 @@ export default function AddClassCard({ userRole }) {
         </div>
       )}
 
-      {/* Choose Role (Professors Only) */}
+      {/* Choose Role */}
       {classAction === "chooseRole" && userRole === "Professor" && (
         <div className="flex flex-col space-y-4 w-full max-w-sm">
           <button
@@ -147,7 +177,7 @@ export default function AddClassCard({ userRole }) {
         </div>
       )}
 
-      {/* Create Class (Professors Only) */}
+      {/* Create Class */}
       {classAction === "createClass" && userRole === "Professor" && (
         <div className="flex flex-col space-y-4 w-full max-w-sm">
           <input
