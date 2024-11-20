@@ -1,107 +1,184 @@
-import React, { useState } from 'react';
-import {
-  format,
-  addMonths,
-  subMonths,
-  startOfMonth,
-  endOfMonth,
-  startOfWeek,
-  endOfWeek,
-  addDays,
-  isSameDay,
-  isSameMonth,
-} from 'date-fns';
-import { Card } from "@/components/card";
+import React, { useState, useEffect } from 'react';
+import { collection, getDocs, addDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase/firebase'; // Ensure your Firebase config is correct
+import './Calendar.css';
 
-function Calendar({ selectedDate, setSelectedDate, plans }) {
+const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [events, setEvents] = useState([]);
+  const [newEvent, setNewEvent] = useState({ time: '', title: '', description: '' });
 
-  const monthStart = startOfMonth(currentMonth);
-  const monthEnd = endOfMonth(monthStart);
-  const startDate = startOfWeek(monthStart);
-  const endDate = endOfWeek(monthEnd);
+  // Fetch events from Firebase
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const userId = auth.currentUser?.uid;
+      if (!userId) return;
 
-  const handleNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
-  const handlePreviousMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
+      try {
+        const eventsRef = collection(db, `users/${userId}/calendarEvents`);
+        const snapshot = await getDocs(eventsRef);
+
+        const fetchedEvents = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setEvents(fetchedEvents);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  const handlePreviousMonth = () => {
+    const newMonth = new Date(currentMonth);
+    newMonth.setMonth(newMonth.getMonth() - 1);
+    setCurrentMonth(newMonth);
+  };
+
+  const handleNextMonth = () => {
+    const newMonth = new Date(currentMonth);
+    newMonth.setMonth(newMonth.getMonth() + 1);
+    setCurrentMonth(newMonth);
+  };
 
   const handleDateClick = (day) => {
-    // Set selected date at midnight to avoid time issues
-    const dateAtMidnight = new Date(day.getFullYear(), day.getMonth(), day.getDate());
-    setSelectedDate(dateAtMidnight);
+    setSelectedDate(day);
   };
 
-  const renderHeader = () => (
-    <div className="flex justify-between items-center mb-4">
-      <button onClick={handlePreviousMonth} className="text-lg font-semibold text-gray-700 dark:text-gray-100">{'<'}</button>
-      <h2 className="text-xl font-bold">{format(currentMonth, 'MMMM yyyy')}</h2>
-      <button onClick={handleNextMonth} className="text-lg font-semibold text-gray-700 dark:text-gray-100">{'>'}</button>
-    </div>
-  );
+  const handleAddEvent = async () => {
+    if (newEvent.time && newEvent.title && newEvent.description && selectedDate) {
+      const userId = auth.currentUser?.uid;
+      if (!userId) return;
 
-  const renderDays = () => {
-    const days = [];
-    const dayFormat = "EEE";
-    let startDay = startOfWeek(new Date());
+      const newEventEntry = {
+        date: selectedDate.toISOString().split('T')[0],
+        time: newEvent.time,
+        title: newEvent.title,
+        description: newEvent.description,
+      };
 
-    for (let i = 0; i < 7; i++) {
-      days.push(
-        <div key={i} className="text-center font-medium text-gray-500 dark:text-gray-400">
-          {format(addDays(startDay, i), dayFormat)}
-        </div>
-      );
-    }
-    return <div className="grid grid-cols-7 gap-1">{days}</div>;
-  };
-
-  const renderCells = () => {
-    const rows = [];
-    let days = [];
-    let day = startDate;
-
-    while (day <= endDate) {
-      for (let i = 0; i < 7; i++) {
-        const dayString = format(day, 'yyyy-MM-dd');
-        const isSelected = isSameDay(day, selectedDate);
-        const isInMonth = isSameMonth(day, monthStart);
-        const hasPlan = Boolean(plans[dayString]); // Check if day has a plan
-        
-        const dayStyles = `p-4 text-center rounded-lg cursor-pointer ${
-          isInMonth ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500'
-        } ${isSelected ? 'ring-2 ring-indigo-500' : ''} ${hasPlan ? 'bg-indigo-100 dark:bg-indigo-700' : ''}`;
-
-        days.push(
-          <div
-            key={day.toISOString()}
-            className={dayStyles}
-            style={{ minHeight: "70px", minWidth: "105px" }} // Consistent cell size
-            onClick={() => handleDateClick(day)}
-          >
-            <span className="inline-block w-full">{format(day, 'd')}</span>
-            {hasPlan && <div className="w-2 h-2 bg-indigo-500 rounded-full mx-auto mt-1"></div>} {/* Dot for plans */}
-          </div>
-        );
-        day = addDays(day, 1);
+      try {
+        const eventsRef = collection(db, `users/${userId}/calendarEvents`);
+        await addDoc(eventsRef, newEventEntry);
+        setEvents([...events, newEventEntry]);
+        setNewEvent({ time: '', title: '', description: '' });
+      } catch (error) {
+        console.error('Error adding event:', error);
       }
-      rows.push(
-        <div className="grid grid-cols-7 gap-1" key={day.toISOString()}>
-          {days}
-        </div>
-      );
-      days = [];
     }
-    return <div className="space-y-1">{rows}</div>;
   };
+
+  const generateCalendarDays = () => {
+    const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+    const endOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+    const startOfCalendar = new Date(startOfMonth);
+    startOfCalendar.setDate(startOfMonth.getDate() - startOfMonth.getDay());
+
+    const endOfCalendar = new Date(endOfMonth);
+    endOfCalendar.setDate(endOfMonth.getDate() + (6 - endOfMonth.getDay()));
+
+    const days = [];
+    for (let day = new Date(startOfCalendar); day <= endOfCalendar; day.setDate(day.getDate() + 1)) {
+      days.push(new Date(day));
+    }
+    return days;
+  };
+
+  const calendarDays = generateCalendarDays();
 
   return (
-    <Card
-      className="p-4 bg-white rounded-lg shadow-lg dark:bg-gray-800"
-      style={{ minWidth: "600px", maxWidth: "800px", minHeight: "500px", maxHeight: "600px" }}
-    >
-      {renderHeader()}
-      {renderDays()}
-      <div className="space-y-1">{renderCells()}</div>
-    </Card>
+    <div className="calendar-layout">
+      <div className="calendar-container">
+        <div className="calendar">
+          <h1 className="calendar-heading">Calendar</h1>
+          <div className="calendar-header">
+            <button className="calendar-nav" onClick={handlePreviousMonth}>
+              {'<'}
+            </button>
+            <h2 className="calendar-title">
+              {currentMonth.toLocaleString('default', { month: 'long' })} {currentMonth.getFullYear()}
+            </h2>
+            <button className="calendar-nav" onClick={handleNextMonth}>
+              {'>'}
+            </button>
+          </div>
+          <div className="calendar-days-row">
+            <span>Sun</span>
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+          </div>
+          <div className="calendar-body">
+            {calendarDays.map((day) => (
+              <div
+                key={day.toISOString()}
+                className={`calendar-cell ${
+                  day.getMonth() === currentMonth.getMonth() ? 'current-month' : 'other-month'
+                } ${selectedDate?.toDateString() === day.toDateString() ? 'selected' : ''} ${
+                  day.toDateString() === new Date().toDateString() ? 'today' : ''
+                }`}
+                onClick={() => handleDateClick(day)}
+              >
+                {day.getDate()}
+                {events.some((event) => event.date === day.toISOString().split('T')[0]) && (
+                  <div className="event-indicator"></div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="event-section">
+        <h2 className="selected-date">
+          {selectedDate ? `Selected Date: ${selectedDate.toDateString()}` : 'Select a date'}
+        </h2>
+        <div className="add-event">
+          <div className="time-input">
+            <label>Time:</label>
+            <input
+              type="time"
+              value={newEvent.time}
+              onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
+            />
+          </div>
+          <div className="event-input">
+            <input
+              type="text"
+              placeholder="Enter Event Title"
+              value={newEvent.title}
+              onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+            />
+            <textarea
+              placeholder="Enter Event Description"
+              value={newEvent.description}
+              onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+            ></textarea>
+          </div>
+          <button className="event-popup-btn" onClick={handleAddEvent}>
+            Add Event
+          </button>
+        </div>
+        <div className="event-list">
+          {events
+            .filter((event) => event.date === selectedDate?.toISOString().split('T')[0])
+            .map((event, index) => (
+              <div className="event" key={index}>
+                <h3 className="event-title">{event.title}</h3>
+                <div className="event-time">{event.time}</div>
+                <p className="event-description">{event.description}</p>
+              </div>
+            ))}
+        </div>
+      </div>
+    </div>
   );
-}
+};
 
 export default Calendar;
