@@ -10,7 +10,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/Collapsible";
 import { ScrollArea } from "@/components/ScrollArea";
-import Logo from "/assets/app-logo.svg";// Import app icon
+import Logo from "/assets/app-logo.svg"; // Import app icon
 
 export default function MainPageSidebar({ onDashboardClick, refreshTrigger }) {
   const navigate = useNavigate();
@@ -81,6 +81,15 @@ export default function MainPageSidebar({ onDashboardClick, refreshTrigger }) {
         onClick={onDashboardClick}
       >
         Dashboard
+      </Button>
+
+      {/* Discussion Board Button */}
+      <Button
+        variant="ghost"
+        className="justify-start w-full font-medium text-left text-slate-300 hover:text-slate-100 hover:bg-slate-800 mb-4"
+        onClick={() => navigate("/discussions")}
+      >
+        Discussion Board
       </Button>
 
       {/* Classes Dropdown */}
